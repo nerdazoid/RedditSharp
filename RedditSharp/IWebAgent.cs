@@ -1,5 +1,6 @@
-﻿using System.IO;
+using System.IO;
 using System.Net;
+using Newtonsoft.Json.Linq;
 
 namespace RedditSharp
 {
@@ -7,10 +8,13 @@ namespace RedditSharp
     {
         CookieContainer Cookies { get; set; }
         string AuthCookie { get; set; }
-        HttpWebRequest CreateRequest(string url, string method, bool prependDomain = true);
-        HttpWebRequest CreateGet(string url, bool prependDomain = true);
-        HttpWebRequest CreatePost(string url, bool prependDomain = true);
+        string AccessToken { get; set; }
+        HttpWebRequest CreateRequest(string url, string method);
+        HttpWebRequest CreateGet(string url);
+        HttpWebRequest CreatePost(string url);
         string GetResponseString(Stream stream);
         void WritePostBody(Stream stream, object data, params string[] additionalFields);
+        JToken CreateAndExecuteRequest(string url);
+        JToken ExecuteRequest(HttpWebRequest request);
     }
 }

@@ -1,5 +1,13 @@
 # RedditSharp
 
+**Hey, listen**! The Reddit admins are making some really crappy changes to the
+API, and I need you to speak out against them. The changes
+[are here](https://www.reddit.com/r/redditdev/comments/3xdf11/introducing_new_api_terms/)
+and you should
+[message the admins](https://www.reddit.com/message/compose?to=/r/reddit.com&subject=The+planned+API+changes+are+awful&message=Hey,+the+planned+API+changes+are+pretty+awful.+You%27re+asking+users+to+reveal+far+too+much+about+themselves+and+making+the+barrier+to+entry+much+higher+for+new+developers+who+want+to+do+cool+things+with+the+Reddit+API.+You+already+ask+users+to+put+contact+information+in+their+user+agent+string,+and+that+should+be+sufficient.)
+if you disagree with them (you're welcome to change this message to something
+more personal).
+
 A partial implementation of the [Reddit](http://reddit.com) API. Includes support for many API endpoints, as well as
 LINQ-style paging of results.
 
@@ -8,8 +16,7 @@ var reddit = new Reddit();
 var user = reddit.LogIn("username", "password");
 var subreddit = reddit.GetSubreddit("/r/example");
 subreddit.Subscribe();
-var posts = subreddit.GetNew();
-foreach (var post in posts.Take(25))
+foreach (var post in subreddit.New.Take(25))
 {
     if (post.Title == "What is my karma?")
     {
@@ -24,8 +31,8 @@ foreach (var post in posts.Take(25))
 **Important note**: Make sure you use `.Take(int)` when working with pagable content. For example, don't do this:
 
 ```csharp
-var all = reddit.GetRSlashAll();
-foreach (var post in all)
+var all = reddit.RSlashAll;
+foreach (var post in all) // BAD
 {
     // ...
 }
@@ -34,26 +41,10 @@ foreach (var post in all)
 This will cause you to page through everything that has ever been posted on Reddit. Better:
 
 ```csharp
-var all = reddit.GetRSlashAll();
+var all = reddit.RSlashAll;
 foreach (var post in all.Take(25))
 {
     // ...
-}
-```
-
-Here's another example: you've made a bot to periodically check your subreddit's new page for things to automatically
-remove:
-
-```csharp
-var subreddit = reddit.GetSubreddit("/r/myawesomesubreddit");
-var newPosts = subreddit.GetNew();
-var latest = newPosts.Skip(24).First();
-while (true)
-{
-    // Gets all posts since the last post checked
-    var toCheck = newPosts.TakeWhile(p => p != latest).ToArray();
-    CheckPosts(toCheck);
-    Thread.Sleep(60000);
 }
 ```
 
@@ -61,7 +52,7 @@ while (true)
 
 RedditSharp is developed with the following workflow:
 
-1. Nothing happens for weeks
+1. Nothing happens for weeks/months/years
 2. Someone needs it to do something it doesn't already do
 3. That person implements that something and submits a pull request
 4. Repeat
